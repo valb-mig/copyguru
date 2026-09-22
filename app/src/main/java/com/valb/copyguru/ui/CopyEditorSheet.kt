@@ -5,15 +5,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +52,7 @@ fun CopyEditorSheet(
     onDelete: (Copy) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scrollState = rememberScrollState()
     var title by remember { mutableStateOf(copy.title) }
     var content by remember { mutableStateOf(copy.content) }
     var favorite by remember { mutableStateOf(copy.favorite) }
@@ -58,53 +63,64 @@ fun CopyEditorSheet(
     }
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
-        Column(
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = if (copy.id == 0L) "Nova copy" else "Editar copy",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1f)
+        Column(modifier = Modifier.fillMaxWidth().imePadding()) {
+            // Scrollable body: gives up height to keep the action row below always visible.
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = false)
+                    .verticalScroll(scrollState)
+                    .padding(start = 20.dp, end = 20.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = if (copy.id == 0L) "Nova copy" else "Editar copy",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = { favorite = !favorite }) {
+                        Icon(
+                            imageVector = if (favorite) Icons.Default.Star else Icons.Default.StarBorder,
+                            contentDescription = "Favoritar",
+                            tint = if (favorite) Color(0xFFFDCB6E) else MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
+
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Nome da copy") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
                 )
-                IconButton(onClick = { favorite = !favorite }) {
-                    Icon(
-                        imageVector = if (favorite) Icons.Default.Star else Icons.Default.StarBorder,
-                        contentDescription = "Favoritar",
-                        tint = if (favorite) Color(0xFFFDCB6E) else MaterialTheme.colorScheme.outline
-                    )
+
+                OutlinedTextField(
+                    value = content,
+                    onValueChange = { content = it },
+                    label = { Text("Texto") },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp, max = 260.dp)
+                )
+
+                Text("Segmento", style = MaterialTheme.typography.labelLarge)
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(segments, key = { it.id }) { segment ->
+                        FilterChip(
+                            selected = segment.id == segmentId,
+                            onClick = { segmentId = segment.id },
+                            label = { Text(segment.name) }
+                        )
+                    }
                 }
             }
 
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Nome da copy") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = content,
-                onValueChange = { content = it },
-                label = { Text("Texto") },
-                modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp)
-            )
-
-            Text("Segmento", style = MaterialTheme.typography.labelLarge)
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(segments, key = { it.id }) { segment ->
-                    FilterChip(
-                        selected = segment.id == segmentId,
-                        onClick = { segmentId = segment.id },
-                        label = { Text(segment.name) }
-                    )
-                }
-            }
+            HorizontalDivider()
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 28.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
