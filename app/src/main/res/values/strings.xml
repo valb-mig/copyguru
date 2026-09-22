@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CopyGuru</string>
+    <string name="copied">"%1$s" copiado</string>
+    <string name="bubble_channel_name">Bolinha CopyGuru</string>
+    <string name="bubble_notification_title">CopyGuru ativo</string>
+    <string name="bubble_notification_text">Toque na bolinha para abrir suas copies.</string>
+    <string name="favorites">Favoritas</string>
+    <string name="close">Fechar</string>
+    <string name="open_app">Abrir app</string>
+    <string name="empty_copies">Nenhuma copy neste segmento.</string>
+</resources>
