@@ -6,6 +6,8 @@ Seus textos prontos em qualquer app do celular. Uma bolinha flutuante fica por c
 
 Feito pra quem manda a mesma mensagem dezenas de vezes por dia — vendedor, atendimento, consultor, freelancer.
 
+**[Baixar o APK](https://valb-mig.github.io/copyguru-web/)** · [todos os releases](https://github.com/valb-mig/copyguru/releases)
+
 ## Telas
 
 | Lista de copies | Bolinha flutuante |
@@ -114,6 +116,10 @@ Os assets atuais foram gerados a partir da arte aprovada em PNG. Quando o SVG fi
 O app é distribuído por APK direto, não pela Play Store. Cada tag `v*` empurrada
 dispara o workflow de release, que monta o APK assinado e publica em
 [Releases](https://github.com/valb-mig/copyguru/releases).
+
+A página de download fica em [valb-mig.github.io/copyguru-web](https://valb-mig.github.io/copyguru-web/)
+([código](https://github.com/valb-mig/copyguru-web)), e o botão dela sempre aponta
+para o release mais recente.
 
 ```bash
 git tag v1.0.0 && git push origin v1.0.0
