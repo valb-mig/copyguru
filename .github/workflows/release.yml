@@ -46,14 +46,13 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon
+        run: ./gradlew :app:assembleRelease --no-daemon
 
       - name: Renomear artefatos
         run: |
           mkdir -p dist
           VERSION="${GITHUB_REF_NAME:-manual}"
           find app/build/outputs/apk/release -name '*.apk' -exec cp {} "dist/copyguru-$VERSION.apk" \;
-          find app/build/outputs/bundle/release -name '*.aab' -exec cp {} "dist/copyguru-$VERSION.aab" \;
           ls -la dist
 
       - name: Publicar artefatos
@@ -69,9 +68,12 @@ jobs:
           files: dist/*
           generate_release_notes: true
           body: |
-            APK de instalação direta e bundle para a Play Store.
+            APK para instalação direta no aparelho.
 
             **Assinado:** ${{ steps.keystore.outputs.signed == 'true' && 'sim' || 'não (secrets de assinatura ausentes)' }}
 
-            Para instalar: baixe o `.apk` e permita a instalação de apps de fontes desconhecidas.
+            Para instalar: baixe o `.apk` e libere a instalação de apps de fontes desconhecidas.
             Na primeira vez que ligar a bolinha, o Android vai pedir a permissão "Sobrepor a outros apps".
+
+            Atualizar por cima só funciona se o APK novo tiver a mesma assinatura do
+            instalado. Assinatura diferente exige desinstalar antes, e isso apaga as copies.

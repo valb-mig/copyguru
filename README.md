@@ -82,7 +82,7 @@ app/src/main/java/com/valb/copyguru/
 app/src/debug/             Só no build de debug
 └── .../DemoDataReceiver.kt
 
-branding/                  Ícone da Play Store e material de revisão da marca
+branding/                  Ícone em alta resolução e material da marca
 docs/screenshots/
 ```
 
@@ -108,6 +108,20 @@ Rodar de novo substitui os segmentos de demonstração em vez de duplicar, e nã
 O ícone é um adaptive icon com camada monocromática para os ícones temáticos do Android 13+. A arte fica dentro do círculo seguro de 66dp, então nenhuma máscara de launcher corta a marca.
 
 Os assets atuais foram gerados a partir da arte aprovada em PNG. Quando o SVG fiel chegar, eles viram `VectorDrawable` e as pastas por densidade saem do projeto.
+
+## Releases
+
+O app é distribuído por APK direto, não pela Play Store. Cada tag `v*` empurrada
+dispara o workflow de release, que monta o APK assinado e publica em
+[Releases](https://github.com/valb-mig/copyguru/releases).
+
+```bash
+git tag v1.0.0 && git push origin v1.0.0
+```
+
+Atualizar por cima de uma instalação existente só funciona se a assinatura for a
+mesma. Trocar de keystore obriga a desinstalar antes, e isso apaga as copies
+salvas no aparelho.
 
 ## Limitações conhecidas
 
