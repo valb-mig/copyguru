@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand">#FF6C5CE7</color>
+    <color name="panel_surface">#F21B1B22</color>
+    <color name="panel_item">#1FFFFFFF</color>
+    <color name="panel_text">#FFF4F4F6</color>
+    <color name="panel_text_dim">#B3F4F4F6</color>
+    <color name="favorite">#FFFDCB6E</color>
+    <color name="bubble_surface">#F21B1B22</color>
+    <color name="bubble_ring">#24FFFFFF</color>
+</resources>
