@@ -129,6 +129,10 @@ Atualizar por cima de uma instalação existente só funciona se a assinatura fo
 mesma. Trocar de keystore obriga a desinstalar antes, e isso apaga as copies
 salvas no aparelho.
 
+## Licença
+
+[MIT](LICENSE).
+
 ## Limitações conhecidas
 
 - A bolinha depende da permissão de sobreposição; revogou, o serviço não sobe
