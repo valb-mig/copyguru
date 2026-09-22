@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build assinado e release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Sem os secrets de assinatura o build segue e sai um APK não assinado,
+      # então um fork ou um repo recém-clonado não quebra o workflow.
+      - name: Decodificar keystore
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "Secret KEYSTORE_BASE64 ausente: o APK sairá NÃO assinado."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/copyguru.jks"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build de release
+        env:
+          KEYSTORE_PATH: ${{ steps.keystore.outputs.signed == 'true' && format('{0}/copyguru.jks', runner.temp) || '' }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon
+
+      - name: Renomear artefatos
+        run: |
+          mkdir -p dist
+          VERSION="${GITHUB_REF_NAME:-manual}"
+          find app/build/outputs/apk/release -name '*.apk' -exec cp {} "dist/copyguru-$VERSION.apk" \;
+          find app/build/outputs/bundle/release -name '*.aab' -exec cp {} "dist/copyguru-$VERSION.aab" \;
+          ls -la dist
+
+      - name: Publicar artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: copyguru-release
+          path: dist/*
+
+      - name: Criar release no GitHub
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          body: |
+            APK de instalação direta e bundle para a Play Store.
+
+            **Assinado:** ${{ steps.keystore.outputs.signed == 'true' && 'sim' || 'não (secrets de assinatura ausentes)' }}
+
+            Para instalar: baixe o `.apk` e permita a instalação de apps de fontes desconhecidas.
+            Na primeira vez que ligar a bolinha, o Android vai pedir a permissão "Sobrepor a outros apps".
